@@ -1,0 +1,50 @@
+@startuml C4-Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container Diagram for English Leap
+
+Person(user, "English Learner", "A person learning English vocabulary")
+Person(admin, "Content Administrator", "Manages dictionary content")
+
+System_Boundary(englishLeap, "English Leap") {
+    Container(webapp, "Web Application", "React.js, Material-UI", "Provides vocabulary learning interface via web browser")
+    Container(dictionary, "Dictionary Service", "JSON Data", "Stores comprehensive English word definitions, examples, and metadata")
+    Container(userProgress, "User Progress Service", "localStorage", "Tracks user learning progress, known words, and preferences")
+    Container(audioService, "Audio Service", "MP3 Files", "Provides pronunciation audio for vocabulary words")
+    Container(backupService, "Backup Service", "File System", "Handles data backup and restore operations")
+}
+
+System_Ext(browser, "Web Browser", "Chrome, Firefox, Safari, Edge")
+System_Ext(localStorage, "Browser Storage", "Local storage for persistence")
+System_Ext(fileSystem, "File System", "Local file system for backups")
+
+Rel(user, webapp, "Uses", "HTTPS")
+Rel(admin, webapp, "Manages", "HTTPS")
+Rel(webapp, browser, "Runs in", "JavaScript")
+Rel(webapp, dictionary, "Reads vocabulary", "JSON")
+Rel(webapp, userProgress, "Tracks progress", "localStorage API")
+Rel(webapp, audioService, "Plays pronunciation", "Audio API")
+Rel(webapp, backupService, "Backup/restore data", "File API")
+
+Rel(userProgress, localStorage, "Persists data", "Web Storage API")
+Rel(backupService, fileSystem, "Stores backups", "File I/O")
+
+note right of webapp
+  React Components:
+  - Dashboard
+  - Flashcards
+  - Quiz Engine
+  - Word Training
+  - Progress Tracking
+end note
+
+note left of dictionary
+  Data Structure:
+  - 2000+ words
+  - Definitions
+  - Examples
+  - Part of speech
+  - Difficulty levels
+end note
+
+@enduml

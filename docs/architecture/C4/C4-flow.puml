@@ -1,0 +1,64 @@
+@startuml C4-Flow
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Dynamic.puml
+
+title Dynamic Diagram - User Learning Flow in English Leap
+
+Person(user, "English Learner", "A person learning vocabulary")
+Container(webapp, "Web Application", "React.js", "Main application interface")
+Container(dictionary, "Dictionary Service", "JSON", "Vocabulary database")
+Container(progress, "Progress Service", "localStorage", "User progress tracking")
+Container(audio, "Audio Service", "MP3", "Pronunciation audio")
+
+' User starts learning session
+Rel(user, webapp, "1. Opens application", "HTTPS")
+Rel(webapp, dictionary, "2. Loads vocabulary", "JSON fetch")
+Rel(webapp, progress, "3. Retrieves user progress", "localStorage read")
+Rel(webapp, user, "4. Shows dashboard", "UI render")
+
+' User selects flashcards
+Rel(user, webapp, "5. Selects flashcards", "Click")
+Rel(webapp, dictionary, "6. Filters unknown words", "Data processing")
+Rel(webapp, user, "7. Shows flashcard", "UI update")
+
+' User interacts with flashcard
+Rel(user, webapp, "8. Clicks pronunciation", "Click")
+Rel(webapp, audio, "9. Plays audio", "Audio API")
+Rel(audio, user, "10. Plays pronunciation", "Audio output")
+
+' User marks word as known
+Rel(user, webapp, "11. Marks as 'Mastered'", "Click")
+Rel(webapp, progress, "12. Updates progress", "localStorage write")
+Rel(webapp, user, "13. Shows next flashcard", "UI update")
+
+' User takes quiz
+Rel(user, webapp, "14. Starts quiz", "Navigation")
+Rel(webapp, dictionary, "15. Generates questions", "Data processing")
+Rel(webapp, user, "16. Shows quiz question", "UI render")
+Rel(user, webapp, "17. Submits answer", "Form submit")
+Rel(webapp, progress, "18. Records result", "localStorage write")
+Rel(webapp, user, "19. Shows feedback", "UI update")
+
+' User views progress
+Rel(user, webapp, "20. Views leaderboard", "Navigation")
+Rel(webapp, progress, "21. Calculates stats", "Data aggregation")
+Rel(webapp, user, "22. Shows progress", "UI render")
+
+note right of webapp
+  Key User Flows:
+  1. Dashboard → Learning Mode
+  2. Flashcard Study Session
+  3. Quiz Taking
+  4. Progress Tracking
+  5. Word Detail Exploration
+end note
+
+note left of progress
+  Progress Tracking:
+  - Words mastered
+  - Quiz scores
+  - Study streaks
+  - Time spent
+  - Learning goals
+end note
+
+@enduml

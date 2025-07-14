@@ -1,0 +1,518 @@
+openapi: 3.0.3
+info:
+  title: English Leap API
+  description: |
+    API specification for English Leap vocabulary learning platform.
+    Currently implemented as client-side operations, but designed for future backend implementation.
+  version: 1.0.0
+  contact:
+    name: English Leap Team
+    url: https://github.com/english-leap/english-leap
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.englishleap.com/v1
+    description: Production server (future)
+  - url: https://staging-api.englishleap.com/v1
+    description: Staging server (future)
+  - url: http://localhost:3000/api/v1
+    description: Development server (future)
+
+paths:
+  /dictionary/words:
+    get:
+      summary: Get vocabulary words
+      description: Retrieve vocabulary words with optional filtering and pagination
+      tags:
+        - Dictionary
+      parameters:
+        - name: limit
+          in: query
+          description: Number of words to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of words to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: difficulty
+          in: query
+          description: Filter by difficulty level
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+        - name: partOfSpeech
+          in: query
+          description: Filter by part of speech
+          schema:
+            type: string
+            enum: [noun, verb, adjective, adverb, preposition, conjunction, interjection]
+        - name: search
+          in: query
+          description: Search words by text
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 50
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Word'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /dictionary/words/{wordId}:
+    get:
+      summary: Get word details
+      description: Retrieve detailed information for a specific word
+      tags:
+        - Dictionary
+      parameters:
+        - name: wordId
+          in: path
+          required: true
+          description: Unique identifier for the word
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Word details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /user/progress:
+    get:
+      summary: Get user progress
+      description: Retrieve user's learning progress and statistics
+      tags:
+        - User Progress
+      responses:
+        '200':
+          description: User progress data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProgress'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Update user progress
+      description: Update progress for specific words
+      tags:
+        - User Progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProgressUpdate'
+      responses:
+        '200':
+          description: Progress updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /quiz/generate:
+    post:
+      summary: Generate quiz questions
+      description: Generate quiz questions based on user preferences and progress
+      tags:
+        - Quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizRequest'
+      responses:
+        '200':
+          description: Generated quiz questions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /quiz/submit:
+    post:
+      summary: Submit quiz answers
+      description: Submit quiz answers and receive results
+      tags:
+        - Quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSubmission'
+      responses:
+        '200':
+          description: Quiz results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /audio/{wordId}:
+    get:
+      summary: Get word pronunciation audio
+      description: Retrieve audio file for word pronunciation
+      tags:
+        - Audio
+      parameters:
+        - name: wordId
+          in: path
+          required: true
+          description: Unique identifier for the word
+          schema:
+            type: integer
+        - name: voice
+          in: query
+          description: Voice type for pronunciation
+          schema:
+            type: string
+            enum: [default, male, female, british, american]
+            default: default
+      responses:
+        '200':
+          description: Audio file
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Word:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+        word:
+          type: string
+          description: The vocabulary word
+        partOfSpeech:
+          type: string
+          enum: [noun, verb, adjective, adverb, preposition, conjunction, interjection]
+        difficulty:
+          type: integer
+          minimum: 1
+          maximum: 5
+        frequencyRank:
+          type: integer
+          description: Word frequency ranking
+      required:
+        - id
+        - word
+        - partOfSpeech
+        - difficulty
+
+    WordDetail:
+      allOf:
+        - $ref: '#/components/schemas/Word'
+        - type: object
+          properties:
+            definitions:
+              type: array
+              items:
+                type: string
+            examples:
+              type: array
+              items:
+                type: string
+            synonyms:
+              type: array
+              items:
+                type: string
+            antonyms:
+              type: array
+              items:
+                type: string
+            audioUrl:
+              type: string
+              format: uri
+
+    UserProgress:
+      type: object
+      properties:
+        totalWords:
+          type: integer
+        masteredWords:
+          type: integer
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        averageScore:
+          type: number
+          format: float
+        wordsLearned:
+          type: array
+          items:
+            $ref: '#/components/schemas/WordProgress'
+
+    WordProgress:
+      type: object
+      properties:
+        wordId:
+          type: integer
+        masteryLevel:
+          type: integer
+          minimum: 0
+          maximum: 5
+        lastReviewed:
+          type: string
+          format: date-time
+        reviewCount:
+          type: integer
+        correctCount:
+          type: integer
+        isMastered:
+          type: boolean
+
+    ProgressUpdate:
+      type: object
+      properties:
+        wordId:
+          type: integer
+        action:
+          type: string
+          enum: [mastered, needs_practice, reviewed]
+        score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+      required:
+        - wordId
+        - action
+
+    QuizRequest:
+      type: object
+      properties:
+        questionCount:
+          type: integer
+          minimum: 5
+          maximum: 50
+          default: 10
+        difficulty:
+          type: string
+          enum: [easy, medium, hard, mixed]
+          default: mixed
+        questionTypes:
+          type: array
+          items:
+            type: string
+            enum: [multiple_choice, definition, example]
+        includeAudio:
+          type: boolean
+          default: false
+
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+        timeLimit:
+          type: integer
+          description: Time limit in seconds
+
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [multiple_choice, definition, example]
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: string
+        wordId:
+          type: integer
+
+    QuizSubmission:
+      type: object
+      properties:
+        quizId:
+          type: string
+        answers:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              answer:
+                type: string
+              timeSpent:
+                type: integer
+                description: Time spent in milliseconds
+
+    QuizResult:
+      type: object
+      properties:
+        score:
+          type: number
+          format: float
+        correctAnswers:
+          type: integer
+        totalQuestions:
+          type: integer
+        timeSpent:
+          type: integer
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              correct:
+                type: boolean
+              userAnswer:
+                type: string
+              correctAnswer:
+                type: string
+
+    Pagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: integer
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Dictionary
+    description: Vocabulary word management
+  - name: User Progress
+    description: User learning progress tracking
+  - name: Quiz
+    description: Quiz generation and submission
+  - name: Audio
+    description: Pronunciation audio files

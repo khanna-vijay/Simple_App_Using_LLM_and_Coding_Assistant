@@ -1,0 +1,90 @@
+@startuml C4-Environment
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title Environment Diagram for English Leap
+
+Deployment_Node(production, "Production Environment", "Live System") {
+    Deployment_Node(cdn, "CDN", "Global Content Delivery") {
+        Container(prodApp, "English Leap App", "React SPA", "Production build with optimizations")
+        ContainerDb(prodAssets, "Static Assets", "Minified JS/CSS", "Optimized application bundle")
+        ContainerDb(prodAudio, "Audio Files", "Compressed MP3", "Pronunciation audio library")
+        ContainerDb(prodData, "Dictionary Data", "Minified JSON", "Vocabulary database")
+    }
+    
+    Deployment_Node(monitoring, "Monitoring", "Analytics & Logging") {
+        Container(analytics, "Web Analytics", "Google Analytics", "User behavior tracking")
+        Container(errorTracking, "Error Tracking", "Sentry/LogRocket", "Error monitoring and debugging")
+    }
+}
+
+Deployment_Node(staging, "Staging Environment", "Pre-production Testing") {
+    Deployment_Node(stagingCdn, "Staging CDN", "Test Deployment") {
+        Container(stageApp, "Staging App", "React SPA", "Pre-release testing version")
+        ContainerDb(stageAssets, "Test Assets", "JS/CSS", "Staging application bundle")
+    }
+}
+
+Deployment_Node(development, "Development Environment", "Local Development") {
+    Deployment_Node(devMachine, "Developer Machine", "Local Workstation") {
+        Container(devApp, "Dev Server", "Webpack Dev Server", "Hot reload development")
+        Container(devTools, "Dev Tools", "React DevTools", "Development debugging")
+        ContainerDb(devData, "Local Data", "JSON/localStorage", "Development test data")
+    }
+    
+    Deployment_Node(buildPipeline, "Build Pipeline", "CI/CD") {
+        Container(cicd, "GitHub Actions", "Automated CI/CD", "Build, test, and deploy automation")
+        Container(testing, "Test Suite", "Jest/Testing Library", "Automated testing")
+    }
+}
+
+Deployment_Node(userEnvironments, "User Environments", "End User Devices") {
+    Deployment_Node(desktop, "Desktop Browsers", "PC/Mac") {
+        Container(desktopApp, "Desktop Experience", "Full Feature Set", "Complete application functionality")
+    }
+    
+    Deployment_Node(mobile, "Mobile Browsers", "Phone/Tablet") {
+        Container(mobileApp, "Mobile Experience", "Responsive Design", "Touch-optimized interface")
+    }
+    
+    Deployment_Node(offline, "Offline Mode", "No Internet") {
+        Container(offlineApp, "Offline Experience", "Cached App", "Limited functionality with cached data")
+    }
+}
+
+' Environment flow
+Rel(development, staging, "Promotes to", "CI/CD Pipeline")
+Rel(staging, production, "Deploys to", "Release Process")
+
+' User access
+Rel(desktopApp, prodApp, "Accesses", "HTTPS")
+Rel(mobileApp, prodApp, "Accesses", "HTTPS")
+Rel(offlineApp, prodApp, "Syncs with", "When online")
+
+' Development workflow
+Rel(devApp, cicd, "Triggers", "Git push")
+Rel(cicd, testing, "Runs", "Automated tests")
+Rel(cicd, stageApp, "Deploys to", "Staging")
+
+' Monitoring
+Rel(prodApp, analytics, "Sends data to", "Analytics API")
+Rel(prodApp, errorTracking, "Reports errors to", "Error API")
+
+note right of production
+  Production Features:
+  - Global CDN distribution
+  - HTTPS encryption
+  - Performance monitoring
+  - Error tracking
+  - Backup systems
+end note
+
+note left of development
+  Development Features:
+  - Hot module replacement
+  - Source maps
+  - Development tools
+  - Local testing
+  - Automated builds
+end note
+
+@enduml

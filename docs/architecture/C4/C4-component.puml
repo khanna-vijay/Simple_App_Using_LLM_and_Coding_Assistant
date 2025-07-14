@@ -1,0 +1,65 @@
+@startuml C4-Component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram for English Leap Web Application
+
+Person(user, "English Learner", "Uses the application")
+
+Container_Boundary(webapp, "Web Application") {
+    Component(layout, "Layout Components", "React", "Navigation, header, footer, and page structure")
+    Component(dashboard, "Dashboard Component", "React", "Main landing page with progress overview")
+    Component(flashcards, "Flashcards Component", "React", "Interactive flashcard learning interface")
+    Component(quiz, "Quiz Component", "React", "Quiz engine with multiple question types")
+    Component(training, "Word Training Component", "React", "Word browsing and detailed study")
+    Component(leaderboard, "Leaderboard Component", "React", "Progress comparison and achievements")
+    
+    Component(contexts, "Context Providers", "React Context", "Global state management")
+    Component(services, "Service Layer", "JavaScript", "Business logic and data access")
+    Component(hooks, "Custom Hooks", "React Hooks", "Reusable stateful logic")
+    Component(utils, "Utility Functions", "JavaScript", "Helper functions and performance utilities")
+}
+
+Container_Ext(dictionary, "Dictionary Service", "JSON Data")
+Container_Ext(userProgress, "User Progress Service", "localStorage")
+Container_Ext(audioService, "Audio Service", "MP3 Files")
+
+Rel(user, layout, "Navigates", "UI interactions")
+Rel(layout, dashboard, "Routes to", "React Router")
+Rel(layout, flashcards, "Routes to", "React Router")
+Rel(layout, quiz, "Routes to", "React Router")
+Rel(layout, training, "Routes to", "React Router")
+Rel(layout, leaderboard, "Routes to", "React Router")
+
+Rel(dashboard, contexts, "Consumes state", "useContext")
+Rel(flashcards, contexts, "Consumes state", "useContext")
+Rel(quiz, contexts, "Consumes state", "useContext")
+Rel(training, contexts, "Consumes state", "useContext")
+Rel(leaderboard, contexts, "Consumes state", "useContext")
+
+Rel(contexts, services, "Uses", "Function calls")
+Rel(services, hooks, "Implements", "Custom hooks")
+Rel(services, utils, "Uses", "Helper functions")
+
+Rel(services, dictionary, "Fetches data", "JSON parsing")
+Rel(services, userProgress, "Persists state", "localStorage API")
+Rel(services, audioService, "Plays audio", "Audio API")
+
+note right of contexts
+  Context Providers:
+  - DictionaryContext
+  - UserProgressContext
+  - AudioContext
+  - UserContext
+  - FontSizeContext
+end note
+
+note left of services
+  Services:
+  - DictionaryService
+  - UserProgressService
+  - AudioService
+  - LeaderboardService
+  - BackupService
+end note
+
+@enduml

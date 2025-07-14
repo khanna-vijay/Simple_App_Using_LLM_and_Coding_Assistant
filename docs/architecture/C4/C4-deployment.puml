@@ -1,0 +1,68 @@
+@startuml C4-Deployment
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title Deployment Diagram for English Leap
+
+Deployment_Node(userDevice, "User Device", "Windows/Mac/Linux/Mobile") {
+    Deployment_Node(browser, "Web Browser", "Chrome/Firefox/Safari/Edge") {
+        Container(webapp, "English Leap Web App", "React.js SPA", "Single Page Application")
+        ContainerDb(localStorage, "Browser Storage", "localStorage/IndexedDB", "User progress and preferences")
+        ContainerDb(cache, "Browser Cache", "HTTP Cache", "Static assets and audio files")
+    }
+    
+    Deployment_Node(fileSystem, "Local File System", "OS File System") {
+        ContainerDb(backups, "Backup Files", "Folders/ZIP", "Project backups and exports")
+    }
+}
+
+Deployment_Node(cdn, "Content Delivery Network", "Static File Hosting") {
+    Container(staticAssets, "Static Assets", "HTML/CSS/JS", "Application bundle and resources")
+    ContainerDb(audioFiles, "Audio Files", "MP3", "Pronunciation audio files")
+    ContainerDb(dictionaryData, "Dictionary Data", "JSON", "Vocabulary database")
+}
+
+Deployment_Node(devEnvironment, "Development Environment", "Local Development") {
+    Deployment_Node(nodeServer, "Node.js Server", "Development Server") {
+        Container(devServer, "React Dev Server", "Webpack Dev Server", "Hot reload development server")
+    }
+    
+    Deployment_Node(buildTools, "Build Tools", "CI/CD Pipeline") {
+        Container(buildProcess, "Build Process", "npm/webpack", "Asset compilation and optimization")
+    }
+}
+
+Rel(webapp, staticAssets, "Loads from", "HTTPS")
+Rel(webapp, audioFiles, "Streams", "HTTPS")
+Rel(webapp, dictionaryData, "Fetches", "HTTPS")
+Rel(webapp, localStorage, "Persists to", "Web Storage API")
+Rel(webapp, cache, "Caches in", "HTTP Cache")
+Rel(webapp, backups, "Exports to", "File API")
+
+Rel(devServer, buildProcess, "Uses", "Build pipeline")
+Rel(buildProcess, staticAssets, "Deploys to", "CI/CD")
+
+note right of userDevice
+  Supported Platforms:
+  - Desktop browsers
+  - Mobile browsers
+  - Progressive Web App
+  - Offline capability
+end note
+
+note left of cdn
+  Hosting Options:
+  - Netlify
+  - Vercel
+  - GitHub Pages
+  - AWS S3 + CloudFront
+end note
+
+note bottom of devEnvironment
+  Development Workflow:
+  1. Local development with hot reload
+  2. Build optimization
+  3. Static asset generation
+  4. CDN deployment
+end note
+
+@enduml

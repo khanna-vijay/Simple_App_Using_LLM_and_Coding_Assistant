@@ -1,0 +1,38 @@
+@startuml C4-Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for English Leap
+
+Person(user, "English Learner", "A person learning English vocabulary")
+Person(admin, "Content Administrator", "Manages dictionary content and system configuration")
+
+System(englishLeap, "English Leap", "Vocabulary learning application with flashcards, quizzes, and progress tracking")
+
+System_Ext(browser, "Web Browser", "Chrome, Firefox, Safari, Edge")
+System_Ext(audioService, "Text-to-Speech Service", "Google Cloud TTS for pronunciation audio")
+System_Ext(backupStorage, "Backup Storage", "Local file system or cloud storage for backups")
+
+Rel(user, englishLeap, "Uses", "HTTPS")
+Rel(admin, englishLeap, "Manages content", "HTTPS")
+Rel(englishLeap, browser, "Runs in", "JavaScript/HTML/CSS")
+Rel(englishLeap, audioService, "Generates pronunciation", "API calls")
+Rel(englishLeap, backupStorage, "Stores/retrieves backups", "File I/O")
+
+note right of englishLeap
+  Core Features:
+  - Vocabulary flashcards
+  - Interactive quizzes
+  - Progress tracking
+  - Audio pronunciation
+  - Offline capability
+end note
+
+note left of user
+  User Goals:
+  - Learn new vocabulary
+  - Practice pronunciation
+  - Track learning progress
+  - Study offline
+end note
+
+@enduml
