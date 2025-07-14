@@ -200,10 +200,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Made with ❤️ for English language learners worldwide.
 
-## 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/english-leap&type=Date)](https://star-history.com/#yourusername/english-leap&Date)
-
 ---
 
 *English Leap - Empowering vocabulary learning through technology*
