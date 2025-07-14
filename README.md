@@ -124,10 +124,6 @@ english-leap/
 - Definitions, examples, and pronunciation included
 - Organized by difficulty level and part of speech
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ### Development Setup
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
