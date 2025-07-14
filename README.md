@@ -209,3 +209,9 @@ Made with ❤️ for English language learners worldwide.
 *English Leap - Empowering vocabulary learning through technology*
 
 Please Note : There are only a few audio files in this repo, and the Dictionary is around 331 words. The attached Python scripts can be used to generate the audio files and the complete dictionary.
+
+
+<img width="2523" height="1293" alt="image" src="https://github.com/user-attachments/assets/c666cfc6-c9e0-41f3-aea1-08f758782209" />
+
+
+
