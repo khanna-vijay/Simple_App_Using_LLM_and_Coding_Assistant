@@ -33,7 +33,7 @@ A comprehensive vocabulary learning application built with React that helps Engl
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/khanna-vijay/Simple_App_Using_LLM_and_Coding_Assistants.git
+   git clone https://github.com/khanna-vijay/Simple_App_Using_LLM_and_Coding_Assistant.git
    cd english-leap
    ```
 
